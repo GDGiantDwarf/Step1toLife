@@ -1,0 +1,8 @@
+[{
+    "name":"cobble",
+    "sprite":"../ressources/blocks/cobb.png"
+},
+{
+    "name":"grass",
+    "sprite":"../ressources/blocks/grass.png"
+}]
