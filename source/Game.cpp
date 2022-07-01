@@ -30,6 +30,23 @@ static Vector3 getPos(float x, float y, float z)
     return (vec);
 }
 
+bool IsInBlock(Vector3 pos, Chunkmap* chunkmap)
+{
+    int chunk_x = std::floor(std::floor(pos.x)/16);
+    int chunk_y = std::floor(std::floor(pos.z)/16);
+    int i = fmod(pos.x, 16);
+    i = i < 0 ? i + 16 : i;
+    int k = std::floor(pos.y);
+    int j = fmod(pos.z, 16);
+    j = j < 0 ? j + 16 : j;
+            std::cout << "Y = " << k <<std::endl;
+            std::cout << "IN BLOCK " << i << " " << k << " " << j << std::endl;
+            std::cout << "IN CHUNK " << chunk_x << " " << chunk_y << std::endl;
+    if(k <= 0 || k >= 20)
+        return false;
+    return ((chunkmap->GetChunk(chunk_x, chunk_y)->blockmap[i][j][k]->type) != AIR);
+}
+
 void Game::init()
 {
 	this->cam.Setup(90,Vector3{ 0, 0, 0 });
@@ -37,6 +54,16 @@ void Game::init()
 	this->cam.MoveSpeed.x = 5;
 	this->cam.FarPlane = 5000;
     this->cam.SetCameraPosition(getPos(0.0f, 20.0f, 0.0f));
+
+    std::function<bool(rlFPCamera&, Vector3&, const Vector3&)> ValidateCamPosition =
+    [this](rlFPCamera& camera, Vector3& newPosition, const Vector3& oldPosition) {
+        if(IsInBlock(newPosition, this->chunkmap)){
+            std::cout << "IN BLOCK" << std::endl;
+            newPosition = oldPosition;
+        }
+        return true;
+    };
+    this->cam.ValidateCamPosition = ValidateCamPosition;
 }
 
 void Game::loop()
